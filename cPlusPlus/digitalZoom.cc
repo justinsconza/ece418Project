@@ -25,7 +25,7 @@ int main (int argc, char* argv[]){
 	double BW = 2.5;
 
 	// make images for each frame of movie
-	int N = atoi(argv[4])+1;
+	int N = atoi(argv[4]);
 	ImageTemplate<double> movie[N];	
 
 	double alpha = (double)U / (double)D;
@@ -49,13 +49,14 @@ int main (int argc, char* argv[]){
 
 	double xf = (double)atoi(argv[5]);
 	double yf = (double)atoi(argv[6]);
-	
-	double xDelta = (xf-xi)/(double)N;
-	double yDelta = (yf-yi)/(double)N;
+
+	double xDelta = (xf-xi)/(double)(N-1);
+	double yDelta = (yf-yi)/(double)(N-1);
+	printf("xDelta: %f\tyDelta: %f\n", xDelta, yDelta);
 
 	// mark the center and the destination as a target
 	int B = 5;
-	target(&movie[0], (int)round(xf-xDelta), (int)round(yf-yDelta), B, 200.0);
+	target(&movie[0], (int)round(xf), (int)round(yf), B, 200.0);
 	target(&movie[0], (int)round(xi), (int)round(yi), B, 0.0);
 
 	// mark the deltas on original
