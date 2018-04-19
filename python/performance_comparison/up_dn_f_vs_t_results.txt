@@ -1,0 +1,23 @@
+upsample by 47, downsample by 10
+
+frequency domain results: output_FD.png
+
+upsample time:  0.16944289207458496
+interpolate time:  411.47324299812317
+decimate_FD time:  1103.622797012329
+
+-------------------------------------------
+time domain results: output_TD
+
+upsample time:  0.17935729026794434
+interpolate time:  459.67261385917664
+decimate_rbj time:  1868.606115102768
+
+
+-------------------------------------------
+
+moral of the story: time domain filter with rbj coeff's way way better performance
+but the price is much longer computation time. so when making a movie, this may 
+not be a feasible way to go.  may have to do frequency domain filtering for anti-aliasing
+w/ decimation
+
