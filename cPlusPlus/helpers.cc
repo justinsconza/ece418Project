@@ -34,6 +34,18 @@ void scale(ImageTemplate<double>* input) {
 
 }
 
+void crop(ImageTemplate<double>* input, ImageTemplate<double>* output, int W, int H, int xn, int yn) {
+
+	output->Resize(W,H);
+
+	for(int y=yn-H/2; y<yn+H/2; y++){
+		for(int x=xn-W/2; x<xn+W/2; x++){
+
+			output->Pixel(x-(xn-W/2),y-(yn-H/2)) = input->Pixel(x,y);
+		}
+	}
+
+}
 
 void interpolate(ImageTemplate<double>* input, ImageTemplate<double>* output, int U) {
 	

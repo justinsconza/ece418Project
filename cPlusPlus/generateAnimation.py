@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 from numpy import sin as sin
 from numpy import cos as cos
@@ -13,10 +15,10 @@ import matplotlib.image as img
 import imageio
 
 images = []
-for i in range(20):
+for i in range(int(sys.argv[1])):
     file_str = str(i) + '.png'
     images.append(imageio.imread(file_str))
 
-output_file = 'output_animation.gif'
+output_file = 'outputAnimation.gif'
 imageio.mimsave(output_file, images)
 
