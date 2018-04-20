@@ -117,8 +117,6 @@ void interpolate(ImageTemplate<double>* input, ImageTemplate<double>* output, in
 		}
 	}
 
-	// skipping ZOH stuff cause cropping anyway
-
 }
 
 void downsampleRBJ(ImageTemplate<double>* input, ImageTemplate<double>* output, int D, float BW) {
