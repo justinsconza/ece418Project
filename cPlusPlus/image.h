@@ -430,6 +430,7 @@ void ImageTemplate<PixelType>::Resize (int width, int height)
 		std::cerr << "Could not allocate memory for image" << std::endl;
 		throw ("Could not allocate memory for image");
 	}
+
 }
 
 // Resize
@@ -446,7 +447,7 @@ int ImageTemplate<PixelType>::CoordinateIndex (int x, int y) const
 	// warn if we were told to try to access an invalid pixel
 	if (x < 0 || x >= _width || y < 0 || y >= _height)
 	{
-		std::cerr << "Warning: The pixel coordinate (" << x << "," << y << ") is invalid, clamping coordinates to the image's dimensions" << std::endl;
+		// std::cerr << "Warning: The pixel coordinate (" << x << "," << y << ") is invalid, clamping coordinates to the image's dimensions" << std::endl;
 	}
 	
 	x = std::min (x, _width - 1);

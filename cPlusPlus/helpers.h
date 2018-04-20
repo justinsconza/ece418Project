@@ -12,6 +12,7 @@ void scale(ImageTemplate<double>* input);
 void crop(ImageTemplate<double>* input, ImageTemplate<double>* output, int W, int H, int xn, int yn);
 int gcd(int n, int m); 
 void interpolate(ImageTemplate<double>* input, ImageTemplate<double>* output, int U);
-void downsampleRBJ(ImageTemplate<double>* input, ImageTemplate<double>* output, int D, float BW);
+void downsampleRBJ(ImageTemplate<double>* input, ImageTemplate<double>* output, int D, int XOut, int YOut, float BW);
+void zeroOrderHold(ImageTemplate<double>* input, int numToCopy);
 
 #endif 

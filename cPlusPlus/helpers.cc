@@ -119,7 +119,7 @@ void interpolate(ImageTemplate<double>* input, ImageTemplate<double>* output, in
 
 }
 
-void downsampleRBJ(ImageTemplate<double>* input, ImageTemplate<double>* output, int D, float BW) {
+void downsampleRBJ(ImageTemplate<double>* input, ImageTemplate<double>* output, int D, int XOut, int YOut, float BW) {
 
 	// input dimensions
 	int X = input->Width();
@@ -140,12 +140,12 @@ void downsampleRBJ(ImageTemplate<double>* input, ImageTemplate<double>* output, 
 	}
 
 	ImageTemplate<double> decimateCol;
-	decimateCol.Resize(X/D,Y);
+	decimateCol.Resize(XOut,Y);//X/D,Y);
 	ImageTemplate<double> filterCol;
-	filterCol.Resize(X/D,Y);
+	filterCol.Resize(XOut,Y);//X/D,Y);
 
 	// define output size
-	output->Resize(X/D,Y/D);
+	output->Resize(XOut,YOut);//X/D,Y/D);
 
 	double wc = M_PI / D;
 	double cos_wc = cos(wc);
@@ -186,7 +186,7 @@ void downsampleRBJ(ImageTemplate<double>* input, ImageTemplate<double>* output, 
 	
 	// decimate the rows that were just filtered
 	for (y=0; y<Y; y++){
-		for (x=0; x<Y/D; x++){
+		for (x=0; x<XOut; x++){
 			decimateCol.Pixel(x,y) = filterRow.Pixel(x*D,y);
 		}
 	}
@@ -194,7 +194,7 @@ void downsampleRBJ(ImageTemplate<double>* input, ImageTemplate<double>* output, 
 	// decimateCol.SavePng("2decimateCol.png");
 
 	// filter each column
-	for (x=0; x<X/D; x++) {
+	for (x=0; x<XOut; x++) {
 		for (y=2; y<Y; y++){
 			filterCol.Pixel(x,y) = c[0]*decimateCol.Pixel(x,y) +
 								   c[1]*decimateCol.Pixel(x,y-1) +
@@ -207,12 +207,51 @@ void downsampleRBJ(ImageTemplate<double>* input, ImageTemplate<double>* output, 
 	// filterCol.SavePng("3filterCol.png");
 	
 	// decimate the columns that were just filtered
-	for (y=0; y<Y/D; y++){
-		for (x=0; x<X/D; x++){
+	for (y=0; y<YOut; y++){
+		for (x=0; x<XOut; x++){
 			output->Pixel(x,y) = filterCol.Pixel(x,y*D);
 		}
 	}
 	
 	// output->SavePng("4output.png");
 	
+}
+
+void zeroOrderHold(ImageTemplate<double>* input, int numToCopy) {
+
+	int W = input->Width();
+	int H = input->Height();
+
+	int x=0; int y=0;
+
+	double a;
+
+	// copy rows
+	for (x=0; x<W; x++){
+
+		a = input->Pixel(x, H-numToCopy+1);
+		for (y=H-numToCopy; y<H; y++){
+			input->Pixel(x,y) = a;
+		}
+
+		a = input->Pixel(x, numToCopy);
+		for (y=numToCopy; y>=0; y--){
+			input->Pixel(x,y) = a;
+		}
+	}
+
+	// copy columns
+	for (y=0; y<H; y++){
+
+		a = input->Pixel(W-numToCopy+1, y);
+		for (x=W-numToCopy; x<W; x++){
+			input->Pixel(x,y) = a;
+		}
+
+		a = input->Pixel(numToCopy, y);
+		for (x=numToCopy; x>=0; x--){
+			input->Pixel(x,y) = a;
+		}
+	}
+
 }

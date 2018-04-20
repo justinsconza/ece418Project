@@ -9,46 +9,6 @@ using namespace std;
 
 #define TARGET_FLAG 0
 
-
-void zeroOrderHold(ImageTemplate<double>* input, int numToCopy) {
-
-	int W = input->Width();
-	int H = input->Height();
-
-	int x=0; int y=0;
-
-	double a;
-
-	// copy rows
-	for (x=0; x<W; x++){
-
-		a = input->Pixel(x, H-numToCopy+1);
-		for (y=H-numToCopy; y<H; y++){
-			input->Pixel(x,y) = a;
-		}
-
-		a = input->Pixel(x, numToCopy);
-		for (y=numToCopy; y>=0; y--){
-			input->Pixel(x,y) = a;
-		}
-	}
-
-	// copy columns
-	for (y=0; y<H; y++){
-
-		a = input->Pixel(W-numToCopy+1, y);
-		for (x=W-numToCopy; x<W; x++){
-			input->Pixel(x,y) = a;
-		}
-
-		a = input->Pixel(numToCopy, y);
-		for (x=numToCopy; x>=0; x--){
-			input->Pixel(x,y) = a;
-		}
-	}
-
-}
-
 // argv inputs:
 //
 // 1         | 2                    | 3             | 4                        | 5
@@ -80,22 +40,22 @@ int main (int argc, char* argv[]){
 	u /= theGcd;
 	d /= theGcd;
 
+	if(u==1){
+		cout << "\n\nToo many frames. Choose a lower value for N\n\n";
+		return 1;
+	}	
+
 	// image scale factor each iteration
 	double alpha = (double)u / (double)d;
-	int wOverAlpha = (int)((double)W/alpha);
-	int hOverAlpha = (int)((double)H/alpha);
-
-	cout << endl;
-
-	cout << "u: " << u << endl;
-	cout << "d: " << d << "\n\n";
-
-	cout << "actual alpha : " << pow(M, 1.0/(double)N) << endl;
-	cout << "rounded alpha: " << alpha << "\n\n";
-
+	int wOverAlpha = (int)round((double)W/alpha);
+	int hOverAlpha = (int)round((double)H/alpha);
 
 	// bandwidth for IIR anti-aliasing filter, lower --> sharper final resolution
-	double BW = 1.0;//2.5;
+	double BW;
+	if(TARGET_FLAG)
+		BW = 2.5;
+	else
+		BW = 1.5;
 
 	// origin coordinates are the middle of the image
 	double xi = (double)W/2.0;
@@ -105,9 +65,22 @@ int main (int argc, char* argv[]){
 	double xf = (double)atoi(argv[4]);
 	double yf = (double)atoi(argv[5]);
 
+	if (xf < 0 || xf > W || yf < 0 || yf > H){
+		cout << "\n\nFinal coordinates must be within range of original image.\n\n";
+		return 1;
+	}
+
 	// step size relative to original image
 	double xDelta = (xf-xi)/(double)(N-1);
 	double yDelta = (yf-yi)/(double)(N-1);
+
+	cout << endl;
+
+	cout << "u: " << u << endl;
+	cout << "d: " << d << "\n\n";
+
+	cout << "actual alpha : " << pow(M, 1.0/(double)N) << endl;
+	cout << "rounded alpha: " << alpha << "\n\n";	
 
 	if(TARGET_FLAG) {
 
@@ -145,7 +118,10 @@ int main (int argc, char* argv[]){
 		
 		// upsample then downsample
 		interpolate(&cropped, &interpolated, u);		
-		downsampleRBJ(&interpolated, &movie[n], d, BW);
+		downsampleRBJ(&interpolated, &movie[n], d, W, H, BW);
+
+		if (movie[n].Height() != H)
+			movie[n].Resize(W,H);
 
 		// copy paste cols and rows along all four edges out to the edges
 		zeroOrderHold(&movie[n], 5);
