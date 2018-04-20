@@ -47,12 +47,24 @@ void crop(ImageTemplate<double>* input, ImageTemplate<double>* output, int W, in
 
 }
 
+int gcd(int n, int m) {
+	int gcd, remainder;
+ 
+	while (n != 0) {
+		remainder = m % n;
+		m = n;
+		n = remainder;
+	}
+	gcd = m;
+	return gcd;
+}
+
 void interpolate(ImageTemplate<double>* input, ImageTemplate<double>* output, int U) {
-	
+
 	// input dimensions
 	int X = input->Width();
 	int Y = input->Height();
-	
+
 	// resize output
 	output->Resize(U*X,U*Y);
 

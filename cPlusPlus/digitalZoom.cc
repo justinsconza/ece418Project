@@ -14,32 +14,19 @@ using namespace std;
 
 int main (int argc, char* argv[]){
 
-	// load the input image
-	// ImageTemplate<double> input;
-	// input.LoadPng (argv[1]);
-
 	// interpolation factor
 	int U = atoi(argv[2]);
 	int D = atoi(argv[3]);
+	double alpha = (double)U / (double)D;
 
 	double BW = 2.5;
 
 	// make images for each frame of movie
 	int N = atoi(argv[4]);
 	ImageTemplate<double> movie[N];	
-
-	double alpha = (double)U / (double)D;
-	// double scale = pow(alpha, 1.0/(double)N);
-	// printf("alpha: %f\tscale: %f\n", alpha, scale);
-	
-	ImageTemplate<double> interpolated;
-	ImageTemplate<double> decimated;
-
 	movie[0].LoadPng(argv[1]);
 	int W = movie[0].Width();
 	int H = movie[0].Height();
-
-	
 
 	// origin and destination coordinates
 	double xi = (double)W/2.0;
@@ -52,7 +39,6 @@ int main (int argc, char* argv[]){
 
 	double xDelta = (xf-xi)/(double)(N-1);
 	double yDelta = (yf-yi)/(double)(N-1);
-	printf("xDelta: %f\tyDelta: %f\n", xDelta, yDelta);
 
 	// mark the center and the destination as a target
 	int B = 5;
@@ -64,8 +50,6 @@ int main (int argc, char* argv[]){
 		target(&movie[0], (int)round(xi+n*xDelta), (int)round(yi+n*yDelta), 3, 0.0);
 	}
 
-	movie[0].SavePng("0.png");
-
 	cout << endl;
 	
 	// intermediate coordinates updated each itealphan
@@ -74,13 +58,15 @@ int main (int argc, char* argv[]){
 	int xnInt;
 	int ynInt;
 
+	ImageTemplate<double> interpolated;
+	ImageTemplate<double> decimated;	
+
+	movie[0].SavePng("0.png");
+
 	for(int n=1; n<N; n++){
 
-		interpolate(&movie[n-1], &interpolated, U);
-		// printf("\n\n  upsize: %d x %d\n", interpolated.Width(), interpolated.Height());
-		
+		interpolate(&movie[n-1], &interpolated, U);		
 		downsampleRBJ(&interpolated, &decimated, D, BW);
-		// printf("updnsize: %d x %d\n", decimated.Width(), decimated.Height());
 
 		// need position of next center in terms of the blown-up image
 		xn = alphaXi + pow(alpha, n)*xDelta;
@@ -101,35 +87,12 @@ int main (int argc, char* argv[]){
 	std::string command = "python /Users/justinsconza/Documents/ECE418/project418/cPlusPlus/generateAnimation.py " + std::to_string(N);
 	cout << endl << "calling: " << command << endl << endl;;	
 	system(command.c_str());
-
+	
+	
 	return 0;
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-	// interpolated image
-	ImageTemplate<double> interpolated;
-	ImageTemplate<double> decimated;
-	
-	interpolate(&input, &interpolated, U);
-	downsampleRBJ(&interpolated, &decimated, D, BW);
-
-*/
 
 
 
